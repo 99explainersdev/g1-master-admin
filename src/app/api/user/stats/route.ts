@@ -1,9 +1,32 @@
 // app/api/user/stats/route.ts
-// This endpoint updates user quiz statistics
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/connectDB";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
+
+// Define the User type
+interface QuizHistoryEntry {
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  quizType: string;
+  date: Date;
+}
+
+interface UserStats {
+  avgScore: number;
+  streak: number;
+  totalQuizzes: number;
+  completedQuizzes: number;
+}
+
+interface User {
+  _id: ObjectId;
+  stats?: UserStats;
+  lastQuizDate?: Date;
+  quizHistory?: QuizHistoryEntry[];
+  // Add other user fields as needed
+}
 
 export async function POST(request: Request) {
   try {
@@ -44,7 +67,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const usersCollection = db.collection("users");
+    const usersCollection = db.collection<User>("users");
 
     // Get current user data
     const user = await usersCollection.findOne({ 
@@ -71,7 +94,7 @@ export async function POST(request: Request) {
     const scorePercentage = (score / totalQuestions) * 100;
     const newAvgScore = (previousTotal + scorePercentage) / totalQuizzes;
 
-    // Update streak (you can add more complex logic here)
+    // Update streak
     const newStreak = scorePercentage >= 80 ? currentStats.streak + 1 : 0;
 
     // Update user stats
