@@ -2,7 +2,14 @@
 import { useState, useEffect, ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaBars, FaTimes, FaClipboardList, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaClipboardList,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaFileAlt,
+} from "react-icons/fa";
 import { signOut } from "next-auth/react";
 
 function AdminLayout({ children }: { children: ReactNode }) {
@@ -20,13 +27,26 @@ function AdminLayout({ children }: { children: ReactNode }) {
   const toggleDrawer = () => setIsOpen((prev) => !prev);
 
   const navItems = [
-    { name: "Quiz Management", href: "/admin/quiz", icon: <FaClipboardList className="w-5 h-5" /> },
-    { name: "User Management", href: "/admin/users", icon: <FaUserCircle className="w-5 h-5" /> },
+    {
+      name: "Quiz Management",
+      href: "/admin/quiz",
+      icon: <FaClipboardList className="w-5 h-5" />,
+    },
+    {
+    name: "Topic Management",
+    href: "/admin/topics",
+    icon: <FaFileAlt className="w-5 h-5" />,
+  },
+    {
+      name: "User Management",
+      href: "/admin/users",
+      icon: <FaUserCircle className="w-5 h-5" />,
+    },
+    
   ];
 
   const isActive = (href: string) => pathname === href;
 
-  
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" }); // redirect to home after logout
   };
@@ -35,19 +55,33 @@ function AdminLayout({ children }: { children: ReactNode }) {
     <div className="flex h-screen bg-slate-50">
       {/* Mobile overlay */}
       {isMobile && isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 z-40 backdrop-blur-sm" onClick={toggleDrawer} />
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-40 backdrop-blur-sm"
+          onClick={toggleDrawer}
+        />
       )}
 
       {/* Sidebar */}
       <aside
         className={`fixed md:relative z-50 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
-          isMobile ? (isOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
+          isMobile
+            ? isOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+            : "translate-x-0"
         }`}
       >
         <div className="flex items-center justify-between px-6 py-8">
-          <h2 className="text-xl font-bold text-gray-900">Admin</h2>
+          <Link href="/admin">
+            <h2 className="text-xl font-bold text-gray-900 cursor-pointer">
+              Admin
+            </h2>
+          </Link>
           {isMobile && (
-            <button onClick={toggleDrawer} className="text-gray-600 hover:bg-gray-100 p-2 rounded-lg">
+            <button
+              onClick={toggleDrawer}
+              className="text-gray-600 hover:bg-gray-100 p-2 rounded-lg"
+            >
               <FaTimes className="w-4 h-4" />
             </button>
           )}
@@ -61,10 +95,18 @@ function AdminLayout({ children }: { children: ReactNode }) {
                   href={item.href}
                   onClick={isMobile ? toggleDrawer : undefined}
                   className={`flex items-center space-x-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive(item.href) ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    isActive(item.href)
+                      ? "bg-gray-100 text-gray-900"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
-                  <div className={isActive(item.href) ? "text-gray-700" : "text-gray-500 group-hover:text-gray-700"}>
+                  <div
+                    className={
+                      isActive(item.href)
+                        ? "text-gray-700"
+                        : "text-gray-500 group-hover:text-gray-700"
+                    }
+                  >
                     {item.icon}
                   </div>
                   <span>{item.name}</span>
@@ -97,7 +139,9 @@ function AdminLayout({ children }: { children: ReactNode }) {
                 <FaBars className="w-5 h-5" />
               </button>
             )}
-            <h1 className="text-2xl font-bold text-slate-900">Welcome, Admin</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Welcome, Admin
+            </h1>
           </div>
         </header>
 
